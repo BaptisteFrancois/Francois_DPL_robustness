@@ -1,0 +1,17 @@
+name: rivercloud_gis
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - pandas
+  - numpy
+  - geopandas
+  - rasterio
+  - shapely
+  - pyproj
+  - scikit-learn
+  - gdal
+  - scipy
+  - matplotlib
+  - pip
+

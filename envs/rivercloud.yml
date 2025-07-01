@@ -1,0 +1,24 @@
+name: rivercloud
+channels:
+  - conda-forge
+  - pytorch
+  - defaults
+dependencies:
+  - python=3.10
+  - pandas
+  - numpy
+  - scikit-learn
+  - scipy
+  - matplotlib
+  - pip
+  - xarray
+  - pytorch>=2.6.0
+  - statsmodels
+  - geopandas
+  - rasterio
+  - numba
+  - pip:
+      - deap
+
+
+

@@ -10,7 +10,7 @@ import multiprocessing as mp
 
 # Local directory of the LOCAc2 data
 livneh_lusu_dir = 'H:/Livneh_lusu_2020/'
-output_dir = '../data/livneh_lusu/'
+output_dir = '../data/Livneh_Lusu_extracted_data/'
 tmp_work_dir = '../temporary_working_dir'
 
 # Load the shapefile of the 671 basins
@@ -22,8 +22,11 @@ basin_shapefile = gpd.read_file(basin_shapefile_file)
 basin_shapefile = basin_shapefile.to_crs(epsg=4326)
 
 # Split the basin shapefile into chunks for parallel processing
-num_processes = 4
-basin_chunks = np.array_split(basin_shapefile, num_processes)
+num_processes = 2
+
+split_indices = np.array_split(basin_shapefile.index, num_processes)
+
+basin_chunks = [basin_shapefile.iloc[indices] for indices in split_indices]
 
 params = [
     (

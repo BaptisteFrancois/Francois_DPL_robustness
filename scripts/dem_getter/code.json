@@ -1,0 +1,46 @@
+[
+  {
+    "name": "dem_getter",
+    "organization": "U.S. Geological Survey",
+    "description": "This repository houses a set of Python tools to expedite the acquisition of 3DEP DEM data. These tools were designed to help geologists in the National Cooperative Geologic Mapping Program more efficiently produce high-resolution base maps and tailored derivative products that help identify and characterize geologic features. These derivatives include hillshades and slope maps, as well as more complex derivatives.",
+    "version": "1.0.0",
+    "status": "Production",
+
+    "permissions": {
+      "usageType": "openSource",
+      "licenses": [
+        {
+          "name": "Public Domain, CC0-1.0",
+          "URL": "https://code.usgs.gov/gecsc/dem_getter/-/raw/1.0.0/LICENSE.md"
+        }
+      ]
+    },
+
+    "homepageURL": "https://code.usgs.gov/gecsc/dem_getter",
+    "downloadURL": "https://code.usgs.gov/gecsc/dem_getter/-/archive/1.0.0/dem_getter-1.0.0.zip",
+    "disclaimerURL": "https://code.usgs.gov/gecsc/dem_getter/-/raw/1.0.0/DISCLAIMER.md",
+    "repositoryURL": "https://code.usgs.gov/gecsc/dem_getter.git",
+    "vcs": "git",
+
+    "laborHours": 500,
+
+    "tags": [
+      "High-resolution topography",
+      "Geologic mapping",
+      "3DEP"
+    ],
+
+    "languages": [
+      "Python"
+    ],
+
+    "contact": {
+      "name": "Sam Johnstone",
+      "email": "sjohnstone@usgs.gov"
+    },
+
+    "date": {
+      "metadataLastUpdated": "2024-04-12"
+    }
+  }
+]

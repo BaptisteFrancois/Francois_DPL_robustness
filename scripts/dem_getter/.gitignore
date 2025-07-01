@@ -1,0 +1,6 @@
+test_rasters
+*.pyc
+**/.ipynb_checkpoints/
+test_data/test_downloads/*
+test_data/*.txt
+**/__pycache__/

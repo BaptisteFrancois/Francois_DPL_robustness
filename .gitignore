@@ -1,0 +1,21 @@
+
+# DPL_robustness
+data/Livneh_Lusu_extracted_data/figures/*/*.png
+data/Livneh_Lusu_extracted_data/*.csv
+data/Livneh_Lusu_extracted_data/figures/*.png
+data/usgs_streamflow/[0-9][0-9]/
+data/usgs_streamflow/Flow_mm_csv/*.csv
+figures/*/*.png
+scripts/__pycache__/*
+
+# results
+results/calibration_results/logs/*.csv
+
+# DEM getter
+scripts/dem_getter/test_data/*
+scripts/dem_getter/images/*
+scripts/notebooks/*
+
+
+# vs
+.vscode/

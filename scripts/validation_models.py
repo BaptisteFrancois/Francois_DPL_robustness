@@ -7,7 +7,6 @@ import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 
 
-
 def plot_validation_figures(obs_ts, hydromodel, name, 
                             predicted=None, plot_figures=True,
                             cal_first=True, cal_fraction=0.7,
@@ -52,7 +51,7 @@ def plot_validation_figures(obs_ts, hydromodel, name,
 
     # Align the time series data to ensure they have the same index
     obs_ts, hydromodel = obs_ts.align(hydromodel, join='inner', axis=0)
-    if isinstance(predicted, pd.Series):
+    if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
         obs_ts, predicted = obs_ts.align(predicted, join='inner', axis=0)
 
     
@@ -79,12 +78,12 @@ def plot_validation_figures(obs_ts, hydromodel, name,
     # Select the calibration and validation periods
     obs_cal = obs_ts[(obs_ts.index >= cal_start) & (obs_ts.index <= cal_end)]
     hydromodel_cal = hydromodel[(hydromodel.index >= cal_start) & (hydromodel.index <= cal_end)]
-    if isinstance(predicted, pd.Series):
+    if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
         predicted_cal = predicted[(predicted.index >= cal_start) & (predicted.index <= cal_end)]
     if cal_fraction < 1:
         obs_val = obs_ts[(obs_ts.index >= val_start) & (obs_ts.index <= val_end)]
         hydromodel_val = hydromodel[(hydromodel.index >= val_start) & (hydromodel.index <= val_end)]
-        if isinstance(predicted, pd.Series):
+        if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
             predicted_val = predicted[(predicted.index >= val_start) & (predicted.index <= val_end)]
     
     
@@ -99,7 +98,7 @@ def plot_validation_figures(obs_ts, hydromodel, name,
     hydromodel_wy_cal = hydromodel_cal.resample('YE-SEP').mean()
     hydromodel_wy_cal = hydromodel_wy_cal[1:-1]  # Drop first and last year to avoid incomplete data
 
-    if isinstance(predicted, pd.Series):
+    if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
         predicted_monthly_cal = predicted_cal.resample('ME').mean()
         predicted_wy_cal = predicted_cal.resample('YE-SEP').mean()
         predicted_wy_cal = predicted_wy_cal[1:-1]  # Drop first and last year to avoid incomplete data
@@ -112,7 +111,7 @@ def plot_validation_figures(obs_ts, hydromodel, name,
         obs_wy_val = obs_wy_val[1:-1]  # Drop first and last year to avoid incomplete data
         hydromodel_wy_val = hydromodel_val.resample('YE-SEP').mean()
         hydromodel_wy_val = hydromodel_wy_val[1:-1]  # Drop first and last year to avoid incomplete data
-        if isinstance(predicted, pd.Series):
+        if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
             predicted_monthly_val = predicted_val.resample('ME').mean()
             predicted_wy_val = predicted_val.resample('YE-SEP').mean()
             predicted_wy_val = predicted_wy_val[1:-1]  # Drop first and last year to avoid incomplete data
@@ -152,7 +151,7 @@ def plot_validation_figures(obs_ts, hydromodel, name,
                     nse_hydromodel_month_val, bias_hydromodel_month_val), 
                     color='#2c7fb8')
 
-        if isinstance(predicted, pd.Series):
+        if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
             mask = ~np.isnan(obs_monthly_cal.values) & ~np.isnan(predicted_monthly_cal.values)
             nse_predicted_monthly_cal = \
                 round(nse_lamb(obs_monthly_cal.values[mask], predicted_monthly_cal.values[mask]), 2)
@@ -201,7 +200,7 @@ def plot_validation_figures(obs_ts, hydromodel, name,
                     color='#2c7fb8')
 
 
-        if isinstance(predicted, pd.Series):
+        if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
             mask = ~np.isnan(obs_wy_cal.values) & ~np.isnan(predicted_wy_cal.values)
             nse_predicted_wy_cal = round(nse_lamb(obs_wy_cal.values[mask], predicted_wy_cal.values[mask]), 2)
             bias_predicted_wy_cal = round(bias_relative_lamb(obs_wy_cal.values[mask], predicted_wy_cal.values[mask]), 2)
@@ -232,7 +231,7 @@ def plot_validation_figures(obs_ts, hydromodel, name,
         ax3.plot(obs_doy_cycle, label='Observed', color='black')
         ax3.plot(sim_doy_cycle, label='ABCD', color='#1d91c0')
 
-        if isinstance(predicted, pd.Series):
+        if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
             predicted_doy_cycle = predicted.groupby(predicted.index.dayofyear).mean()
             ax3.plot(predicted_doy_cycle, label='Predicted', color='#fd8d3c')
         
@@ -252,18 +251,21 @@ def plot_validation_figures(obs_ts, hydromodel, name,
         sim_ecdf = sm.distributions.ECDF(hydromodel_series.to_numpy())
         x_obs = np.sort(obs_ts_series.dropna())
         x_sim = np.sort(hydromodel_series.dropna())
-        if isinstance(predicted, pd.Series):
-            predicted_ecdf = sm.distributions.ECDF(predicted.dropna())
-            x_predicted = np.sort(predicted.dropna())
+        if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
+            predicted_series = predicted[predicted.notna()]['ML_flow_mm_day'] if isinstance(predicted, pd.DataFrame) else predicted.dropna()
+            predicted_series, obs_ts_series = predicted_series.align(obs_ts_series, join='inner', axis=0)
+            predicted_ecdf = sm.distributions.ECDF(predicted_series.to_numpy())
+            x_predicted = np.sort(predicted_series.dropna())
         ax4.plot(x_obs, obs_ecdf(x_obs), label='Observed', color='black')
         
         mask = ~np.isnan(obs_ts_series.values) & ~np.isnan(hydromodel_series.values)
         nse_hydromodel_daily = round(nse_lamb(obs_ts_series.values[mask], hydromodel_series.values[mask]), 2)
         ax4.plot(x_sim, sim_ecdf(x_sim), label='ABCD (NSE daily={})'.format(
             nse_hydromodel_daily), color='#1d91c0')
-        if isinstance(predicted, pd.Series):
-            mask = ~np.isnan(obs_ts_series.values) & ~np.isnan(predicted.values)
-            nse_predicted_daily = round(nse_lamb(obs_ts_series.values[mask], predicted.values[mask]), 2)
+        
+        if isinstance(predicted, pd.Series) or isinstance(predicted, pd.DataFrame):
+            mask = ~np.isnan(obs_ts_series.values) & ~np.isnan(predicted_series.values)
+            nse_predicted_daily = round(nse_lamb(obs_ts_series.values[mask], predicted_series.values[mask]), 2)
             ax4.plot(x_predicted, predicted_ecdf(x_predicted), label='Predicted (NSE daily={})'.format(
                 nse_predicted_daily), color='#fd8d3c')
         ax4.set_xlabel('Flow (mm)')  

@@ -67,7 +67,7 @@ def run_abcd(prcp, tmin, tmax, day_of_year, lat, flowlen,
     flow = routed_direct + routed_base
     #print("final sim →", flow.shape)
     
-    return flow, routed_direct, routed_base, directflow, baseflow, pet, snow, rain, snowmelt, uz, lz, evap
+    return flow, routed_direct, routed_base, directflow, baseflow, pet, snow, rain, snowmelt, snowpack, uz, lz, evap
 
 
 
@@ -103,7 +103,7 @@ def snow_melt(prcp, tmin, snow_params, snowpack_initial=0.0):
         if tmin[t] < snow_thresh:
             snow[t] = prcp[t]
             melt_coeff = 0
-        elif tmin[t] < rain_thresh:
+        elif tmin[t] <= rain_thresh:
             frac_snow = (rain_thresh - tmin[t]) / (rain_thresh - snow_thresh)
             snow[t] = prcp[t] * frac_snow
             melt_coeff = m * frac_snow
@@ -336,7 +336,7 @@ def generate_channel_UH(flowlen, velo, diff, UH_DAY=96, DT=3600, LE=2400):
 
 @njit
 def routing_lohmann(inflow_direct, inflow_base,
-                           UH_HRU_direct, UH_HRU_base, UH_river):
+                    UH_HRU_direct, UH_HRU_base, UH_river):
     
     """
     Route flows for a single basin using precomputed unit hydrographs.
@@ -355,12 +355,13 @@ def routing_lohmann(inflow_direct, inflow_base,
     n_time = inflow_direct.shape[0]
     n_hru = UH_HRU_direct.shape[0]
     n_uh = UH_river.shape[0]
-    UH_len = n_hru + n_uh - 1
+    UH_len = n_hru + n_uh - 1 
 
     # Convolve unit hydrographs (discrete convolution of kernels)
     UH_direct = np.zeros(UH_len)
     UH_base = np.zeros(UH_len)
 
+    # Build the direct and baseflow unit hydrographs
     for k in range(n_hru):
         for j in range(n_uh):
             UH_direct[k + j] += UH_HRU_direct[k] * UH_river[j]
@@ -427,7 +428,7 @@ if __name__ == "__main__":
         routing_par = [1.0, 0.5, 0.1, 0.01]  # N, K, VELO, DIFF
 
         # Call single-basin simulation
-        flow, routed_direct, routed_base, directflow, baseflow, pet, snow, rain, snowmelt, upperzone, lowerzone, evap = \
+        flow, routed_direct, routed_base, directflow, baseflow, pet, snow, rain, snowmelt, snowpack, upperzone, lowerzone, evap = \
             run_abcd(prcp, tmin, tmax, day_of_year, lat, flowlen,
                                   snow_par, pet_par, abcd_par, routing_par)
 

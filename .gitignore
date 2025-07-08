@@ -10,6 +10,8 @@ scripts/__pycache__/*
 
 # results
 results/calibration_results/logs/*.csv
+results/calibration_results/*.csv
+results/calibration_results/figures/*.png
 
 # DEM getter
 scripts/dem_getter/test_data/*
